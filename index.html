@@ -1,0 +1,257 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Satellite Tracker</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body>
+
+		<!-- Sidebar -->
+			<section id="sidebar">
+				<div class="inner">
+					<nav>
+						<ul>
+							<li><a href="#intro">Welcome</a></li>
+							<li><a href="#one">Track Satellite</a></li>
+							<li><a href="#two">About Us</a></li>
+						</ul>
+					</nav>
+				</div>
+			</section>
+
+			<div id="wrapper">
+
+					<section id="intro" class="wrapper style1 fullscreen fade-up">
+						<div class="inner">
+							<h1>TrackSat</h1>
+							<p>A high precision Satellite Tracking WebApp<br />
+							and published under the <a href="google.com">GPL</a>.</p>
+							<ul class="actions">
+								<li><a href="#one" class="button scrolly">Learn more</a></li>
+							</ul>
+						</div>
+					</section>
+
+				<!-- One -->
+					<section id="one" class="wrapper style1 fullscreen fade-up">
+						<link rel="stylesheet" href="css/ol.css">
+						<script src="js/jquery-3.3.1.min.js"></script>
+						<script src="js/ol.js"></script>
+						<script src="js/satellite.js"></script>
+						<div id="map" class="map"></div>
+						<script>
+							
+							function map_tle(data) {
+							
+							  //alert(data.toString().split('\n')[0]);
+							  var map = new ol.Map({
+								layers: [
+								  new ol.layer.Tile({
+									source: new ol.source.OSM()
+								  })
+								],
+								target: 'map',
+								view: new ol.View({
+								  projection: 'EPSG:4326',
+								  center: [0, 0],
+								  zoom: 2
+								})
+							  });
+							  
+							  var imageStyle = new ol.style.Style({
+								image: new ol.style.Circle({
+								  radius: 2,
+								  snapToPixel: false,
+								  fill: new ol.style.Fill({color: 'yellow'}),
+								  stroke: new ol.style.Stroke({color: 'red', width: 1})
+								})
+							  });
+
+							  var headInnerImageStyle = new ol.style.Style({
+								image: new ol.style.Circle({
+								  radius: 2,
+								  snapToPixel: false,
+								  fill: new ol.style.Fill({color: 'blue'})
+								})
+							  });
+
+							  var headOuterImageStyle = new ol.style.Style({
+								image: new ol.style.Circle({
+								  radius: 3,
+								  snapToPixel: false,
+								  fill: new ol.style.Fill({color: 'black'})
+								})
+							  });
+							  
+							  var coordinates = new Array();
+							  var date = new Date();
+							  map.on('postcompose', function(event) {
+									renderTLE(map, event, data, date, coordinates, imageStyle, headInnerImageStyle, headOuterImageStyle);		
+							  });	  
+							  map.render();
+							}
+							
+							function renderTLE(map, event, data, date, coordinates, imageStyle, headInnerImageStyle, headOuterImageStyle) {
+								var vectorContext = event.vectorContext;
+								var frameState = event.frameState;
+								var tle_lines = data.toString().split('\n');
+								var satrec = satellite.twoline2satrec(tle_lines[1], tle_lines[2]);
+								//var satrec = satellite.twoline2satrec('1 25544U 98067A   18123.46060005  .00001414  00000-0  28539-4 0  9997', '2 25544  51.6426 241.6751 0003402  43.1658  38.8203 15.54193460111564');
+								var position_eci = satellite.propagate(satrec, date).position;
+								var position_geo = satellite.eciToGeodetic(position_eci, satellite.gstime(date));
+								var lon = satellite.degreesLong(position_geo.longitude);
+								var lat = satellite.degreesLong(position_geo.latitude);
+								//document.write(satellite.degreesLong(position_geo.longitude) +' ' +satellite.degreesLong(position_geo.latitude));
+								if (coordinates.length == 4000) {
+									coordinates.shift();
+								}
+								coordinates.push([lon, lat]);
+								vectorContext.setStyle(imageStyle);
+								vectorContext.drawGeometry(new ol.geom.MultiPoint(coordinates));
+								var headPoint = new ol.geom.Point(coordinates[coordinates.length - 1]);
+								vectorContext.setStyle(headOuterImageStyle);
+								vectorContext.drawGeometry(headPoint);
+								vectorContext.setStyle(headInnerImageStyle);
+								vectorContext.drawGeometry(headPoint);
+								date.setMilliseconds(date.getMilliseconds() + 500);
+								map.render();
+							}
+
+							$(document).ready(function(){
+								$("#satbt").click(function(){
+									 satno = document.getElementById("satno").value;
+									 satnolen = satno.toString().length;
+									 if (satnolen > 0 && satnolen < 6) {
+										 $.ajax({
+											type: 'post',
+											url: 'TLE.php',
+											data: {
+												'satno': satno
+											},
+											success: function(data) {
+											    data = JSON.parse(data);
+												if (data != 'No record found') {
+												    document.getElementById("satno").style.visibility = "hidden";
+													document.getElementById("satbt").style.visibility = "hidden";
+													map_tle(data);
+												} else alert(data);
+											}
+										});
+									}
+								});
+							});
+							
+						</script>
+
+						<input type=text pattern=[0-9] id = "satno" placeholder='Enter Satellite Number' required></input>
+						<button id="satbt"> Track </button>
+					</section>
+
+				<!-- Two -->
+					<section id="two" class="wrapper style3 fade-up">
+						<div class="inner">
+							<h2>Authors</h2>
+							<p>We are MSc/PGD students of IIRS</p>
+							<div class="features">
+								<section>
+									<img src="images/topguntocat.png" class="circular-image"/>
+									<h3>Abhisek Maiti</h3>
+									<p>
+									M.Sc (Geoinformatics) <br />
+									mgi17-10930
+									</p>
+								</section>
+								<section>
+									<img src="images/octoclark-kentocat.jpg" class="circular-image"/>
+									<h3>Sayantan Majumdar</h3>
+									<p>
+									M.Sc (Geoinformatics) <br />
+									mgi17-10933
+									</p>
+								</section>
+								<section>
+									<img src="images/catstello.png" class="circular-image"/>
+									<h3>Shashwat Shukla</h3>
+									<p>
+									M.Sc (Geoinformatics) <br />
+									mgi17-10934
+									</p>
+								</section>
+								<section>
+									<img src="images/privateinvestocat.jpg" class="circular-image"/>
+									<h3>Saurabh Gupta</h3>
+									<p>
+									PGD (Geoinformatics) <br />
+									pgd17-10945
+									</p>
+								</section>
+							</div>
+						</div>
+					</section>
+
+				<!-- Three -->
+					<section id="three" class="wrapper style1 fade-up">
+						<div class="inner">
+							<h2>Get in touch</h2>
+							<p>Phasellus convallis elit id ullamcorper pulvinar. Duis aliquam turpis mauris, eu ultricies erat malesuada quis. Aliquam dapibus, lacus eget hendrerit bibendum, urna est aliquam sem, sit amet imperdiet est velit quis lorem.</p>
+							<div class="split style1">
+								<section>
+									<form method="post" action="#">
+										<div class="field half first">
+											<label for="name">Name</label>
+											<input type="text" name="name" id="name" />
+										</div>
+										<div class="field half">
+											<label for="email">Email</label>
+											<input type="text" name="email" id="email" />
+										</div>
+										<div class="field">
+											<label for="message">Message</label>
+											<textarea name="message" id="message" rows="5"></textarea>
+										</div>
+										<ul class="actions">
+											<li><a href="" class="button submit">Send Message</a></li>
+										</ul>
+									</form>
+								</section>
+								<section>
+									<ul class="contact">
+										<li>
+											<h3>Address</h3>
+											<span>4, Kalidas Road<br />
+											IIRS, Dehradun<br />
+											Uttarakhand, India <br />
+											PIN: 248001</span>
+										</li>
+										<li>
+											<h3>Email</h3>
+											<a href="#">maiti@student.utwente.nl</a>
+										</li>
+										<li>
+											<h3>Social</h3>
+											<ul class="icons">
+												<li><a href="https://github.com/digital-idiot/TrackSat-Web" class="fa-github"><span class="label">GitHub</span></a></li>
+											</ul>
+										</li>
+									</ul>
+								</section>
+							</div>
+						</div>
+					</section>
+
+			</div>
+
+		<!-- Footer -->
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
