@@ -27,9 +27,9 @@
 						<div class="inner">
 							<h1>TrackSat</h1>
 							<p>A high precision Satellite Tracking WebApp<br />
-							and published under the <a href="google.com">GPL</a>.</p>
+							using OpenLayers 3 and PHP
 							<ul class="actions">
-								<li><a href="#one" class="button scrolly">Learn more</a></li>
+								<li><a href="https://en.wikipedia.org/wiki/Two-line_element_set" class="button scrolly" target=_new>Learn more</a></li>
 							</ul>
 						</div>
 					</section>
@@ -44,8 +44,6 @@
 						<script>
 							
 							function map_tle(data) {
-							
-							  //alert(data.toString().split('\n')[0]);
 							  var map = new ol.Map({
 								layers: [
 								  new ol.layer.Tile({
@@ -82,7 +80,7 @@
 								  radius: 3,
 								  snapToPixel: false,
 								  fill: new ol.style.Fill({color: 'black'})
-								})
+								}) 
 							  });
 							  
 							  var coordinates = new Array();
@@ -98,12 +96,10 @@
 								var frameState = event.frameState;
 								var tle_lines = data.toString().split('\n');
 								var satrec = satellite.twoline2satrec(tle_lines[1], tle_lines[2]);
-								//var satrec = satellite.twoline2satrec('1 25544U 98067A   18123.46060005  .00001414  00000-0  28539-4 0  9997', '2 25544  51.6426 241.6751 0003402  43.1658  38.8203 15.54193460111564');
 								var position_eci = satellite.propagate(satrec, date).position;
 								var position_geo = satellite.eciToGeodetic(position_eci, satellite.gstime(date));
 								var lon = satellite.degreesLong(position_geo.longitude);
 								var lat = satellite.degreesLong(position_geo.latitude);
-								//document.write(satellite.degreesLong(position_geo.longitude) +' ' +satellite.degreesLong(position_geo.latitude));
 								if (coordinates.length == 4000) {
 									coordinates.shift();
 								}
@@ -111,11 +107,13 @@
 								vectorContext.setStyle(imageStyle);
 								vectorContext.drawGeometry(new ol.geom.MultiPoint(coordinates));
 								var headPoint = new ol.geom.Point(coordinates[coordinates.length - 1]);
+								var satName = tle_lines[0].trim();
 								vectorContext.setStyle(headOuterImageStyle);
 								vectorContext.drawGeometry(headPoint);
 								vectorContext.setStyle(headInnerImageStyle);
 								vectorContext.drawGeometry(headPoint);
-								date.setMilliseconds(date.getMilliseconds() + 500);
+								//date.setMilliseconds(date.getMilliseconds() + 500);
+								date.setMinutes(date.getMinutes() + 1);
 								map.render();
 							}
 
@@ -144,7 +142,6 @@
 							});
 							
 						</script>
-
 						<input type=text pattern=[0-9] id = "satno" placeholder='Enter Satellite Number' required></input>
 						<button id="satbt"> Track </button>
 					</section>
@@ -195,7 +192,7 @@
 					<section id="three" class="wrapper style1 fade-up">
 						<div class="inner">
 							<h2>Get in touch</h2>
-							<p>Phasellus convallis elit id ullamcorper pulvinar. Duis aliquam turpis mauris, eu ultricies erat malesuada quis. Aliquam dapibus, lacus eget hendrerit bibendum, urna est aliquam sem, sit amet imperdiet est velit quis lorem.</p>
+							<p>For feedback and code related issues, please contact us</p>
 							<div class="split style1">
 								<section>
 									<form method="post" action="#">
