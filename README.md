@@ -5,7 +5,7 @@ TLE Parser: https://github.com/digital-idiot/TrackSat
 Conference Paper: https://doi.org/10.5194/isprs-annals-IV-5-109-2018
 
 ## Libraries used: 
-### Skyfield, Openlayers 3, PHP, PostgreSQL
+### Skyfield, Orbit-predictor, Openlayers 3, PHP, PostgreSQL
 
 <p class="text-justify">
 
