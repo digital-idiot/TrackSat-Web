@@ -9,7 +9,7 @@
   
   if ($db) {
 	  $satno = $_POST["satno"];
-          $query_string = "SELECT SATELLITE_NAME, RAW_TLE FROM public.Sat_Info WHERE SATELLITE_NUMBER = ".$satno;
+          $query_string = "SELECT SATELLITE_NAME, RAW_TLE FROM Sat_Info WHERE SATELLITE_NUMBER = ".$satno;
 	  $results = pg_query($db, $query_string);
 	  $rows = array();
 	  while ($row = pg_fetch_row($results)) {
