@@ -1,10 +1,12 @@
 <?php
-  $host        = "host = 127.0.0.1";
-  $port        = "port = 5432";
-  $dbname      = "dbname = tracksat";
-  $credentials = "user = postgres password=postgres";
+  //$host        = "host = 127.0.0.1";
+  //$port        = "port = 5432";
+  //$dbname      = "dbname = tracksat";
+  //$credentials = "user = postgres password=postgres";
 
-  $db = pg_connect("$host $port $dbname $credentials");
+  //$db = pg_connect("$host $port $dbname $credentials");
+  $db = pg_connect(getenv("postgresql-trapezoidal-98653"));
+  
   if ($db) {
 	  $satno = $_POST["satno"];
           $query_string = "SELECT SATELLITE_NAME, RAW_TLE FROM public.Sat_Info WHERE SATELLITE_NUMBER = ".$satno;
