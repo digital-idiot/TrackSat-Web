@@ -27,7 +27,7 @@
 						<div class="inner">
 							<h1>TrackSat</h1>
 							<p>A high precision Satellite Tracking WebApp<br />
-							using OpenLayers 3 and PHP
+							using OpenLayers 3, PHP & PostgreSQL
 							<ul class="actions">
 								<li><a href="https://en.wikipedia.org/wiki/Two-line_element_set" class="button scrolly" target=_new>Learn more</a></li>
 							</ul>
@@ -41,9 +41,12 @@
 						<script src="js/ol.js"></script>
 						<script src="js/satellite.js"></script>
 						<div id="map" class="map"></div>
+ 						<div id="satname" style="font-weight:bold;font-style:italic;text-align:center"></div>
 						<script>
 							
 							function map_tle(data) {
+							  data_split = data.toString().split(",")
+							  document.getElementById("satname").innerHTML = data_split[0]
 							  var map = new ol.Map({
 								layers: [
 								  new ol.layer.Tile({
@@ -54,7 +57,7 @@
 								view: new ol.View({
 								  projection: 'EPSG:4326',
 								  center: [0, 0],
-								  zoom: 2
+								  zoom: 2.5
 								})
 							  });
 							  
@@ -86,7 +89,7 @@
 							  var coordinates = new Array();
 							  var date = new Date();
 							  map.on('postcompose', function(event) {
-									renderTLE(map, event, data, date, coordinates, imageStyle, headInnerImageStyle, headOuterImageStyle);		
+									renderTLE(map, event, data_split[1], date, coordinates, imageStyle, headInnerImageStyle, headOuterImageStyle);		
 							  });	  
 							  map.render();
 							}
@@ -112,8 +115,8 @@
 								vectorContext.drawGeometry(headPoint);
 								vectorContext.setStyle(headInnerImageStyle);
 								vectorContext.drawGeometry(headPoint);
-								//date.setMilliseconds(date.getMilliseconds() + 500);
-								date.setMinutes(date.getMinutes() + 1);
+								date.setMilliseconds(date.getMilliseconds()+100);
+								//date.setMinutes(date.getMinutes() + 1);
 								map.render();
 							}
 
@@ -130,11 +133,11 @@
 											},
 											success: function(data) {
 											    data = JSON.parse(data);
-												if (data != 'No record found') {
+											    if (data != 'No record found') {
 												    document.getElementById("satno").style.visibility = "hidden";
 													document.getElementById("satbt").style.visibility = "hidden";
 													map_tle(data);
-												} else alert(data);
+											    } else alert(data);
 											}
 										});
 									}
@@ -150,40 +153,49 @@
 					<section id="two" class="wrapper style3 fade-up">
 						<div class="inner">
 							<h2>Authors</h2>
-							<p>We are MSc/PGD students of IIRS</p>
+							<p>We are from Geoinformatics Department, IIRS, ISRO</p>
 							<div class="features">
 								<section>
-									<img src="images/topguntocat.png" class="circular-image"/>
+									<img src="images/maiti.png" class="circular-image"/>
 									<h3>Abhisek Maiti</h3>
 									<p>
-									M.Sc (Geoinformatics) <br />
-									mgi17-10930
+									Ongoing M.Sc (IIRS-ITC) <br />
+									maiti@student.utwente.nl
 									</p>
 								</section>
 								<section>
-									<img src="images/octoclark-kentocat.jpg" class="circular-image"/>
+									<img src="images/montimaj.jpg" class="circular-image"/>
 									<h3>Sayantan Majumdar</h3>
 									<p>
-									M.Sc (Geoinformatics) <br />
-									mgi17-10933
+									Ongoing M.Sc (IIRS-ITC) <br />
+									s.majumdar@student.utwente.nl
 									</p>
 								</section>
 								<section>
-									<img src="images/catstello.png" class="circular-image"/>
+									<img src="images/shukla.png" class="circular-image"/>
 									<h3>Shashwat Shukla</h3>
 									<p>
-									M.Sc (Geoinformatics) <br />
-									mgi17-10934
+									Ongoing M.Sc (IIRS-ITC) <br />
+									shukla@student.utwente.nl
 									</p>
 								</section>
 								<section>
-									<img src="images/privateinvestocat.jpg" class="circular-image"/>
-									<h3>Saurabh Gupta</h3>
+									<img src="images/shiva.png" class="circular-image"/>
+									<h3>Shiva Reddy Koti</h3>
 									<p>
-									PGD (Geoinformatics) <br />
-									pgd17-10945
+									Scientist/Engineer- SD<br />
+									shivareddy@iirs.gov.in
 									</p>
 								</section>
+								<section>
+									<img src="images/prasun.jpg" class="circular-image"/>
+									<h3>Prasun Kumar Gupta</h3>
+									<p>
+									Scientist/Engineer- SE<br />
+									prasun@iirs.gov.in
+									</p>
+								</section>
+								<section/>
 							</div>
 						</div>
 					</section>
@@ -229,7 +241,7 @@
 										<li>
 											<h3>Social</h3>
 											<ul class="icons">
-												<li><a href="https://github.com/digital-idiot/TrackSat-Web" class="fa-github"><span class="label">GitHub</span></a></li>
+												<li><a href="https://github.com/digital-idiot/TrackSat-Web" class="fa-github" target="new"><span class="label">GitHub</span></a></li>
 											</ul>
 										</li>
 									</ul>
