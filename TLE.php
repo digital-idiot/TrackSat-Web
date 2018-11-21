@@ -5,7 +5,9 @@
   //$credentials = "user = postgres password=postgres";
 
   //$db = pg_connect("$host $port $dbname $credentials");
-  $db = pg_connect(getenv("postgresql-trapezoidal-98653"));
+  $db = 
+pg_connect(getenv("postgres://duyzykffxvavdq:fbbb29bc935d12cb8026ac29a10e232b929d1881fdca16dda95c4d732d3d40e2@ec2-54-197-249-140.compute-1.amazonaws.
+com:5432/d18rc60vrc9gb9"));
   
   if ($db) {
 	  $satno = $_POST["satno"];
